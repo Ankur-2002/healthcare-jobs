@@ -1,0 +1,33 @@
+// This is the Prisma schema for the Healthcare Jobs SEO Portal.
+// Only ONE model — Job. Simple, fast, SEO-focused.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Job {
+  id          Int      @id @default(autoincrement())
+  jobId       String   @unique // External job ID from scraper
+  title       String
+  slug        String   @db.VarChar(255) // e.g. "nurse-jobs-in-delhi"
+  profession  String // e.g. "Nurse", "Doctor", "Lab Technician"
+  location    String // e.g. "Delhi", "Mumbai"
+  description String   @db.Text
+  applyLink   String
+  company     String
+  category    String // e.g. "Full Time", "Part Time"
+  postedDate  DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Indexes critical for SEO page queries
+  @@index([slug])
+  @@index([profession])
+  @@index([location])
+  @@index([profession, location]) // Composite for filtered queries
+}
