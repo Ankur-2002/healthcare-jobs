@@ -1,31 +1,37 @@
-import Link from 'next/link'
-import type { RelatedPage } from '@/types'
-import { toTitleCase } from '@/lib/slug'
+import Link from 'next/link';
+import type { RelatedPage } from '@/types';
+import { toTitleCase } from '@/lib/slug';
 
 interface RelatedLinksProps {
-  relatedPages: RelatedPage[]
-  currentProfession: string
+  relatedPages: RelatedPage[];
+  currentProfession: string;
 }
 
-export default function RelatedLinks({ relatedPages, currentProfession }: RelatedLinksProps) {
-  if (relatedPages.length === 0) return null
-
+export default function RelatedLinks({
+  relatedPages,
+  currentProfession,
+}: RelatedLinksProps) {
+  if (relatedPages.length === 0) return null;
+  console.log(relatedPages, currentProfession, 'DATA_COMING');
   // Group related pages by profession
-  const grouped = relatedPages.reduce<Record<string, RelatedPage[]>>((acc, page) => {
-    const key = page.profession
-    if (!acc[key]) acc[key] = []
-    acc[key].push(page)
-    return acc
-  }, {})
+  const grouped = relatedPages.reduce<Record<string, RelatedPage[]>>(
+    (acc, page) => {
+      const key = page.profession;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(page);
+      return acc;
+    },
+    {},
+  );
 
-  const professionGroups = Object.entries(grouped)
+  const professionGroups = Object.entries(grouped);
 
   // Sort: current profession's other cities first, then alphabetically
   professionGroups.sort(([a], [b]) => {
-    if (a.toLowerCase() === currentProfession.toLowerCase()) return -1
-    if (b.toLowerCase() === currentProfession.toLowerCase()) return 1
-    return a.localeCompare(b)
-  })
+    if (a.toLowerCase() === currentProfession.toLowerCase()) return -1;
+    if (b.toLowerCase() === currentProfession.toLowerCase()) return 1;
+    return a.localeCompare(b);
+  });
 
   return (
     <aside
@@ -43,14 +49,15 @@ export default function RelatedLinks({ relatedPages, currentProfession }: Relate
               {toTitleCase(profession)} Jobs
             </h3>
             <ul className="space-y-1.5" role="list">
-              {pages.slice(0, 8).map((page) => (
+              {pages.slice(0, 8).map(page => (
                 <li key={page.slug} role="listitem">
                   <Link
                     href={`/${page.slug}`}
                     className="flex items-center justify-between group text-sm text-cyan-700 hover:text-cyan-900 hover:underline transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 rounded py-0.5"
                   >
                     <span>
-                      {toTitleCase(profession)} Jobs in {toTitleCase(page.location)}
+                      {toTitleCase(profession)} Jobs in{' '}
+                      {toTitleCase(page.location)}
                     </span>
                     <span className="ml-2 text-xs text-cyan-400 group-hover:text-cyan-600 shrink-0">
                       {page.jobCount}
@@ -63,5 +70,5 @@ export default function RelatedLinks({ relatedPages, currentProfession }: Relate
         ))}
       </div>
     </aside>
-  )
+  );
 }
