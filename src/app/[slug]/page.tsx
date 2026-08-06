@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
-import { parseSlug, toTitleCase } from '@/lib/slug'
+import { parseSlug, professionDisplayName, locationDisplayName } from '@/lib/slug'
 import { generatePageMetadata, generateBreadcrumbJsonLd, generateJobPostingsJsonLd } from '@/lib/metadata'
 import { getJobs, getJobCount, getRelatedPages, getStaticPages } from '@/services/jobs'
 
@@ -72,8 +72,8 @@ export default async function SlugPage({
   if (total === 0 && page === 1) notFound()
 
   const totalPages = Math.ceil(total / PER_PAGE)
-  const professionDisplay = toTitleCase(profession)
-  const locationDisplay = toTitleCase(location)
+  const professionDisplay = professionDisplayName(profession)
+  const locationDisplay = locationDisplayName(location)
 
   // JSON-LD structured data
   const breadcrumbJsonLd = generateBreadcrumbJsonLd(profession, location, slug)
