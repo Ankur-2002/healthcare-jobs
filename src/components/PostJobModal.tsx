@@ -72,6 +72,7 @@ export default function PostJobModal({ isOpen, onClose }: PostJobModalProps) {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Partial<FormState>>({})
+  const [apiError, setApiError] = useState<string | null>(null)
   const modalRef = useRef<HTMLDivElement>(null)
   const firstInputRef = useRef<HTMLInputElement>(null)
 
@@ -122,11 +123,39 @@ export default function PostJobModal({ isOpen, onClose }: PostJobModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
+
     setLoading(true)
-    // Simulate submission (replace with real API call)
-    await new Promise((resolve) => setTimeout(resolve, 1200))
-    setLoading(false)
-    setSubmitted(true)
+    setApiError(null)
+
+    try {
+      const res = await fetch('/api/jobs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobTitle:     form.jobTitle,
+          company:      form.company,
+          location:     form.location,
+          profession:   form.profession,
+          category:     form.category,
+          description:  form.description,
+          applyLink:    form.applyLink,
+          postedDate:   form.postedDate,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setApiError(data.error ?? 'Something went wrong. Please try again.')
+        return
+      }
+
+      setSubmitted(true)
+    } catch {
+      setApiError('Network error. Please check your connection and try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleClose = () => {
@@ -414,6 +443,13 @@ export default function PostJobModal({ isOpen, onClose }: PostJobModalProps) {
                 </p>
               )}
             </div>
+
+            {/* API error */}
+            {apiError && (
+              <p role="alert" className="text-sm text-red-600 font-body bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+                {apiError}
+              </p>
+            )}
 
             {/* Submit */}
             <div className="pt-2 flex items-center justify-end gap-3">
