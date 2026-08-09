@@ -42,7 +42,7 @@ export default function HeroSearchBar({
       <div
         role="search"
         aria-label="Search healthcare jobs"
-        className="flex max-w-[620px] rounded-xl overflow-hidden shadow-2xl bg-white"
+        className="flex max-w-[620px] rounded-xl overflow-hidden shadow-2xl bg-white p-2"
       >
         {/* Job field */}
         <div className="flex items-center flex-1 px-4 border-r border-slate-200">
@@ -68,7 +68,10 @@ export default function HeroSearchBar({
             placeholder="e.g. Nurse, Doctor, Pharmacist"
             value={jobQuery}
             onChange={e => setJobQuery(e.target.value)}
-            className="flex-1 min-w-0 border-none outline-none py-3.5 px-3 text-sm text-slate-800 bg-transparent font-body placeholder:text-slate-400"
+            className="flex-1 min-w-0 border-none py-3.5 px-3 text-sm text-slate-800 bg-transparent font-body placeholder:text-slate-400"
+            style={{
+              outline: 'none',
+            }}
           />
         </div>
 
@@ -96,7 +99,10 @@ export default function HeroSearchBar({
             placeholder="e.g. Bengaluru, Hyderabad"
             value={cityQuery}
             onChange={e => setCityQuery(e.target.value)}
-            className="flex-1 min-w-0 border-none outline-none py-3.5 px-3 text-sm text-slate-800 bg-transparent font-body placeholder:text-slate-400"
+            className="flex-1 min-w-0 border-none py-3.5 px-3 text-sm text-slate-800 bg-transparent font-body placeholder:text-slate-400"
+            style={{
+              outline: 'none',
+            }}
           />
         </div>
 
@@ -104,7 +110,7 @@ export default function HeroSearchBar({
         <Link
           href={searchHref}
           id="nd-search-submit"
-          className="shrink-0 flex items-center px-6 bg-sky-700 hover:bg-sky-600 text-white text-sm font-bold no-underline transition-colors duration-200 whitespace-nowrap"
+          className="flex items-center px-4 hover:bg-green-800 text-white text-sm font-bold no-underline transition-colors duration-200 whitespace-nowrap bg-green-600 rounded-lg"
         >
           Search Jobs
         </Link>
