@@ -363,14 +363,14 @@ export default async function NewDesignPage() {
               {TRUST_BADGES.map(badge => (
                 <div key={badge.title} className="flex items-start gap-3">
                   <div
-                    className="w-7 h-7 rounded-full bg-green-100 text-green-600 flex items-center justify-center shrink-0 mt-0.5"
+                    className="rounded-full bg-green-100 text-green-600 flex items-center justify-center shrink-0 mt-0.5"
                     aria-hidden="true"
                   >
                     <Image
                       src={badge.icon}
                       alt={badge.title}
-                      width={24}
-                      height={24}
+                      width={30}
+                      height={30}
                       className="text-green-600"
                       aria-hidden="true"
                     />
