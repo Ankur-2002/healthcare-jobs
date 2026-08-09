@@ -82,22 +82,27 @@ const WHY_FEATURES = [
   {
     title: 'Huge Job Database',
     desc: 'Thousands of active jobs updated daily.',
+    icon: '/whyUs/huge-job-database.svg',
   },
   {
     title: 'Smart Search',
     desc: 'Find jobs by role, location, experience and more.',
+    icon: '/whyUs/smart-search.svg',
   },
   {
     title: 'Trusted Platform',
     desc: 'Transparent listings with accurate, up-to-date info.',
+    icon: '/whyUs/trusted-platform.svg',
   },
   {
     title: 'Career Resources',
     desc: 'Guides, tips and tools to grow your career.',
+    icon: '/whyUs/career-resources.svg',
   },
   {
     title: 'Employer Trusted',
     desc: 'Top hospitals and healthcare organisations hire here.',
+    icon: '/whyUs/employer-trusted.svg',
   },
 ];
 
@@ -350,11 +355,11 @@ export default async function NewDesignPage() {
 
         {/* ── TRUST BADGES ────────────────────────────────────────── */}
         <section
-          className="bg-white border-b border-slate-200 py-5"
+          className="bg-white border-b border-slate-200 py-8"
           aria-label="Why job seekers trust Health Hire Hub"
         >
           <div className="max-w-[1200px] mx-auto px-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {TRUST_BADGES.map(badge => (
                 <div key={badge.title} className="flex items-start gap-3">
                   <div
@@ -481,7 +486,7 @@ export default async function NewDesignPage() {
           className="py-16 bg-white"
           aria-labelledby="nd-profession-heading"
         >
-          <div className="max-w-[1152px] mx-auto px-6">
+          <div className="max-w-[1200px] mx-auto px-6">
             <div className="flex items-end justify-between mb-7 gap-4 flex-wrap">
               <div>
                 <h2
@@ -538,7 +543,7 @@ export default async function NewDesignPage() {
           className="py-16 bg-slate-50"
           aria-label="Popular job searches and jobs by city"
         >
-          <div className="max-w-[1152px] mx-auto px-6">
+          <div className="max-w-[1200px] mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
               {/* Popular Searches */}
               <div>
@@ -578,7 +583,8 @@ export default async function NewDesignPage() {
                 <p className="text-slate-500 text-sm mt-1 mb-5">
                   Find healthcare opportunities in your city.
                 </p>
-                <div className="grid grid-cols-5 gap-3">
+                {/* Show only 3 cols in mobile & 4 cols in larger screen */}
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
                   {displayCities.slice(0, 10).map(city => (
                     <Link
                       key={city.name}
@@ -609,7 +615,7 @@ export default async function NewDesignPage() {
 
         {/* ── WHY CHOOSE HEALTH HIRE HUB ──────────────────────────── */}
         <section className="py-16 bg-white" aria-labelledby="nd-why-heading">
-          <div className="max-w-[1152px] mx-auto px-6">
+          <div className="max-w-[1200px] mx-auto px-6">
             <h2
               id="nd-why-heading"
               className="text-2xl font-extrabold text-slate-900 text-center mb-8 font-heading"
@@ -620,19 +626,21 @@ export default async function NewDesignPage() {
               {WHY_FEATURES.map(f => (
                 <div
                   key={f.title}
-                  className="bg-slate-50 border border-slate-200 rounded-xl p-6 transition-all duration-200 hover:border-sky-200 hover:shadow-md"
+                  className="bg-slate-50 border border-slate-200 rounded-xl p-6 transition-all duration-200 hover:border-sky-200 hover:shadow-md flex items-start gap-4"
                 >
-                  <div
+                  {/* <div
                     className="w-11 h-11 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center mb-3.5"
                     aria-hidden="true"
-                  >
-                    <ShieldIcon />
-                  </div>
-                  <div className="text-sm font-bold text-slate-900 mb-1 font-heading">
-                    {f.title}
-                  </div>
-                  <div className="text-xs text-slate-500 leading-relaxed">
-                    {f.desc}
+                  > */}
+                  <Image src={f.icon} alt="icon" width={24} height={24} />
+                  {/* </div> */}
+                  <div>
+                    <div className="text-sm font-bold text-slate-900 mb-1 font-heading">
+                      {f.title}
+                    </div>
+                    <div className="text-xs text-slate-500 leading-relaxed">
+                      {f.desc}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -642,23 +650,25 @@ export default async function NewDesignPage() {
 
         {/* ── EMPLOYER CTA BANNER ─────────────────────────────────── */}
         <section
-          className="py-12"
-          style={{
-            background:
-              'linear-gradient(135deg,#0a2540 0%,#0d3460 60%,#1a4d80 100%)',
-          }}
+          className="py-4 bg-white"
+          style={
+            {
+              // background:
+              //   'linear-gradient(135deg,#0a2540 0%,#0d3460 60%,#1a4d80 100%)',
+            }
+          }
           aria-labelledby="nd-cta-heading"
         >
-          <div className="max-w-[1152px] mx-auto px-6">
-            <div className="flex flex-wrap items-center justify-between gap-6">
+          <div className="max-w-[1200px] mx-auto px-6">
+            <div className="flex flex-wrap items-center justify-between gap-6 bg-green-700 rounded-md p-6">
               <div>
                 <h2
                   id="nd-cta-heading"
-                  className="text-2xl font-extrabold text-white mb-2 font-heading"
+                  className="text-3xl font-extrabold text-white mb-2 font-heading"
                 >
                   Hiring Healthcare Professionals?
                 </h2>
-                <p className="text-sky-200 text-sm max-w-lg">
+                <p className="text-white text-sm max-w-lg">
                   Post your vacancy and reach thousands of qualified candidates
                   across India. It takes less than 2 minutes.
                 </p>
