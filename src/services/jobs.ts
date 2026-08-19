@@ -1,11 +1,11 @@
 // services/jobs.ts
 // ALL Prisma queries live here. Zero Prisma usage anywhere else.
 
-import prisma from '@/lib/prisma'
-import { generateSlug } from '@/lib/slug'
-import type { Job, RelatedPage } from '@/types'
+import prisma from '@/lib/prisma';
+import { generateSlug } from '@/lib/slug';
+import type { Job, RelatedPage } from '@/types';
 
-const PER_PAGE = 20
+const PER_PAGE = 20;
 
 // ---------------------------------------------------------------------------
 // Wildcard constants
@@ -13,16 +13,16 @@ const PER_PAGE = 20
 //   profession = 'healthcare'  → show ALL professions
 //   location   = 'india'       → show ALL cities / locations
 // ---------------------------------------------------------------------------
-export const WILDCARD_PROFESSION = 'healthcare'
-export const WILDCARD_LOCATION   = 'india'
+export const WILDCARD_PROFESSION = 'healthcare';
+export const WILDCARD_LOCATION = 'india';
 
 /** Returns true when the profession represents the whole platform (no filter). */
 export const isWildcardProfession = (p: string) =>
-  p.toLowerCase() === WILDCARD_PROFESSION
+  p.toLowerCase() === WILDCARD_PROFESSION;
 
 /** Returns true when the location represents the whole country (no filter). */
 export const isWildcardLocation = (l: string) =>
-  l.toLowerCase() === WILDCARD_LOCATION
+  l.toLowerCase() === WILDCARD_LOCATION;
 
 /**
  * Builds the Prisma `where` clause that respects wildcards.
@@ -37,7 +37,7 @@ function buildWhereClause(profession: string, location: string) {
     ...(!isWildcardLocation(location) && {
       location: { equals: location, mode: 'insensitive' as const },
     }),
-  }
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -47,14 +47,15 @@ export async function getJobs(
   profession: string,
   location: string,
   page: number = 1,
-  perPage: number = PER_PAGE
+  perPage: number = PER_PAGE,
+  sort: 'newest' | 'oldest' = 'newest',
 ): Promise<Job[]> {
   try {
-    const skip = (page - 1) * perPage
+    const skip = (page - 1) * perPage;
 
     return await prisma.job.findMany({
       where: buildWhereClause(profession, location),
-      orderBy: { postedDate: 'desc' },
+      orderBy: { postedDate: sort === 'oldest' ? 'asc' : 'desc' },
       skip,
       take: perPage,
       select: {
@@ -72,69 +73,31 @@ export async function getJobs(
         createdAt: true,
         updatedAt: true,
       },
-    })
+    });
   } catch (error) {
-    console.warn('[getJobs] Failed to connect to database (expected if DATABASE_URL is missing)')
-    return []
+    console.warn(
+      '[getJobs] Failed to connect to database (expected if DATABASE_URL is missing)',
+    );
+    return [];
   }
 }
 
 // ---------------------------------------------------------------------------
 // getJobCount — Total count for a profession/location (for pagination)
 // ---------------------------------------------------------------------------
-export async function getJobCount(profession: string, location: string): Promise<number> {
+export async function getJobCount(
+  profession: string,
+  location: string,
+): Promise<number> {
   try {
     return await prisma.job.count({
       where: buildWhereClause(profession, location),
-    })
+    });
   } catch (error) {
-    console.warn('[getJobCount] Failed to connect to database (expected if DATABASE_URL is missing)')
-    return 0
-  }
-}
-
-// ---------------------------------------------------------------------------
-// getRelatedPages — SEO internal links: sibling pages for Related Jobs section
-// Returns pages for the same profession in other cities, plus other professions.
-// ---------------------------------------------------------------------------
-export async function getRelatedPages(
-  currentProfession: string,
-  currentLocation: string
-): Promise<RelatedPage[]> {
-  try {
-    // Get all unique profession+location combos that have jobs
-    const raw = await prisma.job.groupBy({
-      by: ['profession', 'location'],
-      _count: { id: true },
-      orderBy: [{ profession: 'asc' }, { location: 'asc' }],
-      take: 60, // Cap to avoid excessive links
-    })
-
-    type GroupByRow = { profession: string; location: string; _count: { id: number } }
-    return (raw as GroupByRow[])
-      .filter(
-        (r) => {
-          // For wildcard pages, exclude rows that are also wildcards
-          // to avoid generating recursive/circular related links.
-          const sameProf =
-            isWildcardProfession(currentProfession) ||
-            r.profession.toLowerCase() === currentProfession.toLowerCase()
-          const sameLoc =
-            isWildcardLocation(currentLocation) ||
-            r.location.toLowerCase() === currentLocation.toLowerCase()
-          return !(sameProf && sameLoc)
-        }
-      )
-      .map((r) => ({
-        slug: generateSlug(r.profession, r.location),
-        profession: r.profession,
-        location: r.location,
-        jobCount: r._count.id,
-      }))
-      .slice(0, 40) // Max 40 related links for clean UX
-  } catch (error) {
-    console.warn('[getRelatedPages] Failed to connect to database (expected if DATABASE_URL is missing)')
-    return []
+    console.warn(
+      '[getJobCount] Failed to connect to database (expected if DATABASE_URL is missing)',
+    );
+    return 0;
   }
 }
 
@@ -147,11 +110,13 @@ export async function getProfessions(): Promise<string[]> {
       select: { profession: true },
       distinct: ['profession'],
       orderBy: { profession: 'asc' },
-    })
-    return (rows as Array<{ profession: string }>).map((r) => r.profession)
+    });
+    return (rows as Array<{ profession: string }>).map(r => r.profession);
   } catch (error) {
-    console.warn('[getProfessions] Failed to connect to database (expected if DATABASE_URL is missing)')
-    return []
+    console.warn(
+      '[getProfessions] Failed to connect to database (expected if DATABASE_URL is missing)',
+    );
+    return [];
   }
 }
 
@@ -164,11 +129,13 @@ export async function getCities(): Promise<string[]> {
       select: { location: true },
       distinct: ['location'],
       orderBy: { location: 'asc' },
-    })
-    return (rows as Array<{ location: string }>).map((r) => r.location)
+    });
+    return (rows as Array<{ location: string }>).map(r => r.location);
   } catch (error) {
-    console.warn('[getCities] Failed to connect to database (expected if DATABASE_URL is missing)')
-    return []
+    console.warn(
+      '[getCities] Failed to connect to database (expected if DATABASE_URL is missing)',
+    );
+    return [];
   }
 }
 
@@ -187,17 +154,23 @@ export async function getStaticPages(): Promise<
       having: {
         id: { _count: { gt: 0 } },
       },
-    })
+    });
 
-    type GroupByRow = { profession: string; location: string; _count: { id: number } }
-    return (raw as GroupByRow[]).map((r) => ({
+    type GroupByRow = {
+      profession: string;
+      location: string;
+      _count: { id: number };
+    };
+    return (raw as GroupByRow[]).map(r => ({
       slug: generateSlug(r.profession, r.location),
       profession: r.profession,
       location: r.location,
-    }))
+    }));
   } catch (error) {
-    console.warn('[getStaticPages] Failed to connect to database (expected if DATABASE_URL is missing)')
-    return []
+    console.warn(
+      '[getStaticPages] Failed to connect to database (expected if DATABASE_URL is missing)',
+    );
+    return [];
   }
 }
 
@@ -213,18 +186,24 @@ export async function getFeaturedProfessionLinks(): Promise<
       _count: { id: true },
       orderBy: { _count: { id: 'desc' } },
       take: 20,
-    })
+    });
 
-    type GroupByRow = { profession: string; location: string; _count: { id: number } }
-    return (raw as GroupByRow[]).map((r) => ({
+    type GroupByRow = {
+      profession: string;
+      location: string;
+      _count: { id: number };
+    };
+    return (raw as GroupByRow[]).map(r => ({
       profession: r.profession,
       location: r.location,
       slug: generateSlug(r.profession, r.location),
       count: r._count.id,
-    }))
+    }));
   } catch (error) {
-    console.warn('[getFeaturedProfessionLinks] Failed to connect to database (expected if DATABASE_URL is missing)')
-    return []
+    console.warn(
+      '[getFeaturedProfessionLinks] Failed to connect to database (expected if DATABASE_URL is missing)',
+    );
+    return [];
   }
 }
 
@@ -234,9 +213,9 @@ export async function getFeaturedProfessionLinks(): Promise<
 // to /profession-jobs-in-india, showing all cities for that profession.
 // Used on the homepage "Browse by Profession" section.
 // ---------------------------------------------------------------------------
-export async function getTopProfessions(limit = 6): Promise<
-  Array<{ profession: string; count: number; slug: string }>
-> {
+export async function getTopProfessions(
+  limit = 6,
+): Promise<Array<{ profession: string; count: number; slug: string }>> {
   try {
     // Group by profession only (no location filter) to get nationwide totals
     const raw = await prisma.job.groupBy({
@@ -244,18 +223,20 @@ export async function getTopProfessions(limit = 6): Promise<
       _count: { id: true },
       orderBy: { _count: { id: 'desc' } },
       take: limit,
-    })
+    });
 
-    type Row = { profession: string; _count: { id: number } }
-    return (raw as Row[]).map((r) => ({
+    type Row = { profession: string; _count: { id: number } };
+    return (raw as Row[]).map(r => ({
       profession: r.profession,
       count: r._count.id,
       // Links to /profession-jobs-in-india (wildcard location → all cities)
       slug: generateSlug(r.profession, WILDCARD_LOCATION),
-    }))
+    }));
   } catch (error) {
-    console.warn('[getTopProfessions] Failed to connect to database (expected if DATABASE_URL is missing)')
-    return []
+    console.warn(
+      '[getTopProfessions] Failed to connect to database (expected if DATABASE_URL is missing)',
+    );
+    return [];
   }
 }
 
@@ -264,25 +245,27 @@ export async function getTopProfessions(limit = 6): Promise<
 // Ordered by job count descending so the most active cities appear first.
 // Used on the homepage "Jobs by City" section.
 // ---------------------------------------------------------------------------
-export async function getTopCities(limit = 12): Promise<
-  Array<{ location: string; count: number }>
-> {
+export async function getTopCities(
+  limit = 12,
+): Promise<Array<{ location: string; count: number }>> {
   try {
     const raw = await prisma.job.groupBy({
       by: ['location'],
       _count: { id: true },
       orderBy: { _count: { id: 'desc' } },
       take: limit,
-    })
+    });
 
-    type Row = { location: string; _count: { id: number } }
-    return (raw as Row[]).map((r) => ({
+    type Row = { location: string; _count: { id: number } };
+    return (raw as Row[]).map(r => ({
       location: r.location,
       count: r._count.id,
-    }))
+    }));
   } catch (error) {
-    console.warn('[getTopCities] Failed to connect to database (expected if DATABASE_URL is missing)')
-    return []
+    console.warn(
+      '[getTopCities] Failed to connect to database (expected if DATABASE_URL is missing)',
+    );
+    return [];
   }
 }
 
@@ -310,9 +293,97 @@ export async function getLatestJobs(limit = 4): Promise<Job[]> {
         createdAt: true,
         updatedAt: true,
       },
-    })
+    });
   } catch (error) {
-    console.warn('[getLatestJobs] Failed to connect to database (expected if DATABASE_URL is missing)')
-    return []
+    console.warn(
+      '[getLatestJobs] Failed to connect to database (expected if DATABASE_URL is missing)',
+    );
+    return [];
+  }
+}
+
+// ---------------------------------------------------------------------------
+// getProfessionCities — All cities where a given profession has jobs.
+// Returns location, job count and the pre-built slug, sorted by job count DESC
+// so the most active cities appear first.
+// Used by the "Jobs in Other Cities" section on slug pages.
+// When profession is the wildcard, counts are across ALL professions per city.
+// ---------------------------------------------------------------------------
+export async function getProfessionCities(
+  profession: string,
+): Promise<Array<{ location: string; count: number; slug: string }>> {
+  try {
+    const where = isWildcardProfession(profession)
+      ? {}
+      : { profession: { equals: profession, mode: 'insensitive' as const } };
+
+    const raw = await prisma.job.groupBy({
+      by: ['location'],
+      where,
+      _count: { id: true },
+      orderBy: { _count: { id: 'desc' } }, // highest job count first
+      take: 11, // fetch one extra so filtering the "india" sentinel still leaves 10
+    });
+
+    type Row = { location: string; _count: { id: number } };
+    return (raw as Row[])
+      .filter(r => !isWildcardLocation(r.location)) // exclude the "india" sentinel
+      .map(r => ({
+        location: r.location,
+        count: r._count.id,
+        slug: generateSlug(profession, r.location),
+      }))
+      .slice(0, 10); // hard cap at 10
+  } catch (error) {
+    console.warn(
+      '[getProfessionCities] Failed to connect to database (expected if DATABASE_URL is missing)',
+    );
+    return [];
+  }
+}
+
+// ---------------------------------------------------------------------------
+// getProfessionsInCity — All professions available in a given city.
+// Returns profession, job count and the pre-built slug, sorted by job count DESC
+// so the most active professions appear first.
+// Excludes the wildcard profession ('healthcare') and the current profession
+// so the list only shows genuinely different roles.
+// Used by the "Other Healthcare Jobs in [City]" section on slug pages.
+// ---------------------------------------------------------------------------
+export async function getProfessionsInCity(
+  location: string,
+  excludeProfession: string,
+): Promise<Array<{ profession: string; count: number; slug: string }>> {
+  try {
+    const where = isWildcardLocation(location)
+      ? {}
+      : { location: { equals: location, mode: 'insensitive' as const } };
+
+    const raw = await prisma.job.groupBy({
+      by: ['profession'],
+      where,
+      _count: { id: true },
+      orderBy: { _count: { id: 'desc' } }, // highest job count first
+      take: 12, // fetch extra to account for filtered-out entries
+    });
+
+    type Row = { profession: string; _count: { id: number } };
+    return (raw as Row[])
+      .filter(
+        r =>
+          !isWildcardProfession(r.profession) &&
+          r.profession.toLowerCase() !== excludeProfession.toLowerCase(),
+      )
+      .map(r => ({
+        profession: r.profession,
+        count: r._count.id,
+        slug: generateSlug(r.profession, location),
+      }))
+      .slice(0, 10); // show top 10 professions only
+  } catch (error) {
+    console.warn(
+      '[getProfessionsInCity] Failed to connect to database (expected if DATABASE_URL is missing)',
+    );
+    return [];
   }
 }

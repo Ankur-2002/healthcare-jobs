@@ -1,79 +1,66 @@
-import type { Job } from '@/types'
+import type { Job } from '@/types';
 
 interface JobCardProps {
-  job: Job
+  job: Job;
 }
 
 function formatRelativeDate(date: Date): string {
-  const now = new Date()
-  const diff = now.getTime() - new Date(date).getTime()
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  const now = new Date();
+  const diff = now.getTime() - new Date(date).getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  if (days === 0) return 'Today'
-  if (days === 1) return 'Yesterday'
-  if (days < 7) return `${days} days ago`
-  if (days < 30) return `${Math.floor(days / 7)} weeks ago`
-  if (days < 365) return `${Math.floor(days / 30)} months ago`
-  return `${Math.floor(days / 365)} years ago`
+  if (days === 0) return 'Today';
+  if (days === 1) return 'Yesterday';
+  if (days < 7) return `${days} days ago`;
+  if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
+  if (days < 365) return `${Math.floor(days / 30)} months ago`;
+  return `${Math.floor(days / 365)} years ago`;
 }
 
-function truncateDescription(text: string, maxLength: number = 150): string {
-  if (text.length <= maxLength) return text
-  return text.slice(0, maxLength).replace(/\s+\S*$/, '') + '…'
+function truncateDescription(text: string, maxLength: number = 155): string {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength).replace(/\s+\S*$/, '') + '…';
 }
 
 export default function JobCard({ job }: JobCardProps) {
-  const relativeDate = formatRelativeDate(job.postedDate)
-  const shortDescription = truncateDescription(job.description)
+  const relativeDate = formatRelativeDate(job.postedDate);
+  const shortDescription = truncateDescription(job.description);
 
   return (
     <article
-      className="group bg-white rounded-xl border border-cyan-100 p-5 sm:p-6 hover:border-cyan-300 hover:shadow-lg hover:shadow-cyan-100 transition-all duration-200 cursor-default animate-fade-in-up"
+      className="group bg-white rounded-xl border border-slate-200 p-5 sm:p-6 hover:bg-slate-50 transition-colors duration-150 cursor-default
+      
+      hover:shadow-lg hover:shadow-cyan-100 transition-all duration-200 cursor-default animate-fade-in-up"
       aria-label={`${job.title} at ${job.company}`}
     >
-      <div className="flex flex-col gap-3">
-        {/* Header row: title + date */}
-        <div className="flex items-start justify-between gap-3">
-          <h2 className="text-base sm:text-lg font-heading font-600 text-cyan-900 leading-snug group-hover:text-cyan-700 transition-colors duration-200">
+      {/* Outer row: left content | right actions */}
+      <div className="flex items-start justify-between gap-6">
+        {/* ── Left column ─────────────────────────────────────────────── */}
+        <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+          {/* Category pill */}
+          <div>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+              {job.category}
+            </span>
+          </div>
+
+          {/* Job title */}
+          <h2 className="text-base sm:text-lg font-heading font-bold text-slate-900 leading-snug group-hover:text-indigo-700 transition-colors duration-150 truncate">
             {job.title}
           </h2>
-          <time
-            dateTime={new Date(job.postedDate).toISOString()}
-            className="shrink-0 text-xs text-cyan-500 font-body whitespace-nowrap mt-0.5"
-          >
-            {relativeDate}
-          </time>
-        </div>
 
-        {/* Company */}
-        <div className="flex items-center gap-1.5 text-sm text-cyan-700 font-body">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="w-4 h-4 text-cyan-400 shrink-0"
-            aria-hidden="true"
-          >
-            <path
-              fillRule="evenodd"
-              d="M4 16.5v-13h-.25a.75.75 0 010-1.5h12.5a.75.75 0 010 1.5H16v13h.25a.75.75 0 010 1.5h-3.5a.75.75 0 01-.75-.75v-2.5a.75.75 0 00-.75-.75h-2.5a.75.75 0 00-.75.75v2.5a.75.75 0 01-.75.75h-3.5a.75.75 0 010-1.5H4zm3-11a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zm.5 3.5a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1zm2.5-3a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zm.5 3.5a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <span className="font-medium">{job.company}</span>
-        </div>
+          {/* Employer name */}
+          <p className="text-sm font-semibold text-slate-700 font-body">
+            {job.company}
+          </p>
 
-        {/* Tags: Location + Category */}
-        <div className="flex flex-wrap gap-2" role="list" aria-label="Job details">
-          <span
-            role="listitem"
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-cyan-50 border border-cyan-200 text-xs font-body text-cyan-700"
-          >
+          {/* Location */}
+          <div className="flex items-center gap-1 text-sm text-slate-500 font-body">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"
-              className="w-3 h-3 text-cyan-500"
+              className="w-3.5 h-3.5 text-slate-400 shrink-0"
               aria-hidden="true"
             >
               <path
@@ -82,43 +69,35 @@ export default function JobCard({ job }: JobCardProps) {
                 clipRule="evenodd"
               />
             </svg>
-            {job.location}
-          </span>
-          <span
-            role="listitem"
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-body text-emerald-700"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-3 h-3 text-emerald-500"
-              aria-hidden="true"
-            >
-              <path
-                fillRule="evenodd"
-                d="M6 3.75A2.75 2.75 0 018.75 1h2.5A2.75 2.75 0 0114 3.75v.443c.572.055 1.14.122 1.706.2C17.053 4.582 18 5.75 18 7.07v3.469c0 1.126-.694 2.191-1.83 2.54-1.952.599-4.024.921-6.17.921s-4.219-.322-6.17-.921C2.694 12.73 2 11.665 2 10.539V7.07c0-1.321.947-2.489 2.294-2.676A41.047 41.047 0 016 4.193V3.75zm6.5 0v.325a41.622 41.622 0 00-5 0V3.75c0-.69.56-1.25 1.25-1.25h2.5c.69 0 1.25.56 1.25 1.25zM10 10a1 1 0 00-1 1v.01a1 1 0 001 1h.01a1 1 0 001-1V11a1 1 0 00-1-1H10z"
-                clipRule="evenodd"
-              />
-            </svg>
-            {job.category}
-          </span>
+            <span>{job.location}</span>
+          </div>
+
+          {/* Short description */}
+          <p className="text-sm text-slate-500 font-body leading-relaxed mt-0.5">
+            {shortDescription}
+          </p>
         </div>
 
-        {/* Short description */}
-        <p className="text-sm text-cyan-700 font-body leading-relaxed">{shortDescription}</p>
+        {/* ── Right column ─────────────────────────────────────────────── */}
+        <div className="flex flex-col items-end justify-between gap-4 shrink-0 self-stretch">
+          {/* Posted date */}
+          <time
+            dateTime={new Date(job.postedDate).toISOString()}
+            className="text-xs text-slate-400 font-body whitespace-nowrap"
+          >
+            Posted {relativeDate}
+          </time>
 
-        {/* Apply button */}
-        <div className="pt-1">
+          {/* View Job button */}
           <a
             href={job.applyLink}
             target="_blank"
             rel="noopener noreferrer"
-            id={`apply-btn-${job.id}`}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-heading font-600 hover:bg-emerald-700 active:bg-emerald-800 transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
-            aria-label={`Apply for ${job.title} at ${job.company}`}
+            id={`view-job-btn-${job.id}`}
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg border border-emerald-500 text-emerald-600 text-sm font-semibold font-body hover:bg-emerald-50 hover:border-emerald-600 active:bg-emerald-100 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 whitespace-nowrap"
+            aria-label={`View job: ${job.title} at ${job.company}`}
           >
-            Apply Now
+            View Job
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
@@ -136,5 +115,5 @@ export default function JobCard({ job }: JobCardProps) {
         </div>
       </div>
     </article>
-  )
+  );
 }
