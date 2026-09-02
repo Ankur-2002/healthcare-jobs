@@ -33,7 +33,7 @@ export default function JobList({
   // ── Empty state ────────────────────────────────────────────────────────────
   if (jobs.length === 0) {
     return (
-      <div className="text-center py-16 px-4" role="status" aria-live="polite">
+      <div className="text-center py-16 px-4 " role="status" aria-live="polite">
         <div
           className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4"
           style={{ background: 'rgba(14,165,233,.12)' }}

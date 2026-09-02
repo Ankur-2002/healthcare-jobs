@@ -117,7 +117,7 @@ export default async function SlugPage({
 
       <NewDesignHeader />
 
-      <main id="main-content" className="min-h-screen">
+      <main id="main-content" className="min-h-screen bg-white">
         {/* Hero / Landing section */}
         <LandingContent
           profession={professionDisplay}
@@ -126,7 +126,7 @@ export default async function SlugPage({
         />
 
         {/* Main content area */}
-        <div className="max-w-[1200px] mx-auto px-6 sm:px-6 lg:px-8 py-10">
+        <div className="max-w-[1200px] mx-auto px-6 sm:px-6 lg:px-8 py-10 ">
           {/* Job list — Suspense required because JobList is a client component using useSearchParams */}
           <Suspense
             fallback={

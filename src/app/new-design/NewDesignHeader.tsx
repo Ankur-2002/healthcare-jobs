@@ -29,8 +29,9 @@ const NAV_LINKS = [
       { label: 'Jobs in Chennai', href: '/healthcare-jobs-in-chennai' },
     ],
   },
-  { label: 'Career Resources', href: '/career-resources' },
-  { label: 'For Employers', href: '/employers' },
+
+  // { label: 'Career Resources', href: '/career-resources' },
+  // { label: 'For Employers', href: '/employers' },
 ];
 
 export default function NewDesignHeader() {

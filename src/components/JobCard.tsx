@@ -29,7 +29,7 @@ export default function JobCard({ job }: JobCardProps) {
   return (
     <article
       className="group bg-white rounded-xl border border-slate-200 p-5 sm:p-6 hover:bg-slate-50 transition-colors duration-150 cursor-default
-      
+
       hover:shadow-lg hover:shadow-cyan-100 transition-all duration-200 cursor-default animate-fade-in-up"
       aria-label={`${job.title} at ${job.company}`}
     >

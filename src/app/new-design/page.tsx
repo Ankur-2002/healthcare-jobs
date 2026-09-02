@@ -11,6 +11,7 @@ import NewDesignHeader from './NewDesignHeader';
 import NewDesignFooter from './NewDesignFooter';
 import HeroSearchBar from './HeroSearchBar';
 import Image from 'next/image';
+import PostJobCTA from './PostJobCTA';
 
 export const revalidate = 3600;
 
@@ -674,21 +675,15 @@ export default async function NewDesignPage() {
                 </p>
               </div>
               <div className="flex gap-3 flex-wrap">
-                <Link
-                  href="/post-job"
-                  id="nd-cta-post-btn"
-                  className="inline-flex items-center px-7 py-3 rounded-lg bg-green-500 hover:bg-green-600 text-white font-bold text-sm transition-colors duration-200 no-underline whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-400"
-                >
-                  Post a Job — Free →
-                </Link>
-                <Link
+                <PostJobCTA />
+                {/* <Link
                   href="/employers"
                   id="nd-cta-employer-btn"
                   className="inline-flex items-center px-7 py-3 rounded-lg text-white font-bold text-sm transition-all duration-200 no-underline whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                   style={{ border: '1.5px solid rgba(255,255,255,.4)' }}
                 >
                   For Employers →
-                </Link>
+                </Link> */}
               </div>
             </div>
           </div>

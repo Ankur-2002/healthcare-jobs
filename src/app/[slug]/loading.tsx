@@ -1,12 +1,22 @@
 // Skeleton loading state for the [slug] page
 export default function SlugLoading() {
   return (
-    <div className="min-h-screen bg-cyan-50" aria-busy="true" aria-label="Loading jobs…">
+    <div
+      className="min-h-screen bg-cyan-50"
+      aria-busy="true"
+      aria-label="Loading jobs…"
+    >
       {/* Header skeleton */}
       <div className="bg-white border-b border-cyan-100 h-16" />
 
       {/* Hero skeleton */}
-      <div className="bg-gradient-to-br from-cyan-600 to-cyan-800 py-12 sm:py-16">
+      <div
+        className="bg-gradient-to-br from-cyan-600 to-cyan-800 py-12 sm:py-16"
+        style={{
+          background:
+            'linear-gradient(135deg,#0a2540 0%,#0d3460 40%,#1a4d80 70%,#0f3d6e 100%)',
+        }}
+      >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
           <div className="skeleton h-4 w-48 opacity-60" />
           <div className="skeleton h-10 w-80 max-w-full opacity-70" />
@@ -23,7 +33,10 @@ export default function SlugLoading() {
         </div>
         <ul className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <li key={i} className="bg-white rounded-xl border border-cyan-100 p-5 sm:p-6 space-y-3">
+            <li
+              key={i}
+              className="bg-white rounded-xl border border-cyan-100 p-5 sm:p-6 space-y-3"
+            >
               <div className="flex justify-between gap-4">
                 <div className="skeleton h-5 w-3/4" />
                 <div className="skeleton h-4 w-16 shrink-0" />
@@ -41,5 +54,5 @@ export default function SlugLoading() {
         </ul>
       </div>
     </div>
-  )
+  );
 }
