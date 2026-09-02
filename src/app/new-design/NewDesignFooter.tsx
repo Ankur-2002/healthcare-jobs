@@ -36,7 +36,7 @@ const FOOTER_COLUMNS = [
   },
 ];
 
-const SOCIAL_LINKS = [
+const SOCIAL_LINKS: any[] = [
   //   {
   //     label: 'Facebook',
   //     href: 'https://facebook.com',
