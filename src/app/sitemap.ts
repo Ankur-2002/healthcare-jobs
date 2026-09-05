@@ -19,7 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const pages = await getStaticPages()
     dynamicPages = pages.map((page) => ({
-      url: `${SITE_URL}/${page.slug}`,
+      url: `${SITE_URL}/${page.slug}`.replace(/&/g, '&amp;'),
       lastModified: new Date(),
       changeFrequency: 'hourly' as const,
       priority: 0.8,

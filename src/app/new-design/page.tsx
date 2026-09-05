@@ -12,6 +12,7 @@ import NewDesignFooter from './NewDesignFooter';
 import HeroSearchBar from './HeroSearchBar';
 import Image from 'next/image';
 import PostJobCTA from './PostJobCTA';
+import LatestJobsGrid from './LatestJobsGrid';
 
 export const revalidate = 3600;
 
@@ -418,66 +419,7 @@ export default async function NewDesignPage() {
                 </Link>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                {latestJobs.map(job => {
-                  const diffMs =
-                    Date.now() - new Date(job.postedDate).getTime();
-                  const diffH = Math.floor(diffMs / (1000 * 60 * 60));
-                  const diffD = Math.floor(diffH / 24);
-                  const timeAgo =
-                    diffH < 1
-                      ? 'Just now'
-                      : diffH < 24
-                        ? `${diffH}h ago`
-                        : `${diffD}d ago`;
-
-                  return (
-                    <a
-                      key={job.jobId}
-                      href={job.applyLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex flex-col justify-between bg-white border border-slate-200 rounded-xl p-5 min-h-[220px] cursor-pointer no-underline transition-all duration-200 hover:border-sky-600 hover:shadow-lg hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-                      aria-label={`${job.title} at ${job.company} — Apply now`}
-                    >
-                      <div>
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
-                            {job.profession}
-                          </span>
-                          <span className="text-xs text-slate-400 shrink-0">
-                            {timeAgo}
-                          </span>
-                        </div>
-                        <h3 className="text-[0.95rem] font-bold text-slate-900 leading-snug mb-0.5 font-heading group-hover:text-sky-700 transition-colors duration-150">
-                          {job.title}
-                        </h3>
-                        <p className="text-[0.8rem] text-sky-700 font-medium mb-1">
-                          {job.company}
-                        </p>
-                        <div className="flex flex-wrap gap-2.5 text-xs text-slate-500 mb-2">
-                          <span className="flex items-center gap-1">
-                            <PinIcon />
-                            {job.location}
-                          </span>
-                          <span>Full Time</span>
-                        </div>
-                        <p className="text-[0.8rem] text-slate-600 leading-relaxed line-clamp-2">
-                          {job.description}
-                        </p>
-                      </div>
-                      <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-slate-100">
-                        <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">
-                          {job.category}
-                        </span>
-                        <span className="text-xs font-bold text-sky-700">
-                          View Job →
-                        </span>
-                      </div>
-                    </a>
-                  );
-                })}
-              </div>
+              <LatestJobsGrid jobs={latestJobs} />
             </div>
           </section>
         )}
