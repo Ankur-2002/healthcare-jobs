@@ -1,7 +1,8 @@
-import { MetadataRoute } from 'next'
-import { getStaticPages } from '@/services/jobs'
+import { MetadataRoute } from 'next';
+import { getStaticPages } from '@/services/jobs';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://healthcarejobs.in'
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://healthhirehub.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Homepage
@@ -12,21 +13,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 1,
     },
-  ]
+  ];
 
   // Dynamic profession/location pages
-  let dynamicPages: MetadataRoute.Sitemap = []
+  let dynamicPages: MetadataRoute.Sitemap = [];
   try {
-    const pages = await getStaticPages()
-    dynamicPages = pages.map((page) => ({
+    const pages = await getStaticPages();
+    dynamicPages = pages.map(page => ({
       url: `${SITE_URL}/${page.slug}`.replace(/&/g, '&amp;'),
       lastModified: new Date(),
       changeFrequency: 'hourly' as const,
       priority: 0.8,
-    }))
+    }));
   } catch {
     // DB not configured — return only static pages
   }
 
-  return [...staticPages, ...dynamicPages]
+  return [...staticPages, ...dynamicPages];
 }
