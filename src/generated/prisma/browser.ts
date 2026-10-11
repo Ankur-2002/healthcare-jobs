@@ -22,3 +22,8 @@ export * from './enums';
  * 
  */
 export type Job = Prisma.JobModel
+/**
+ * Model JobApplication
+ * 
+ */
+export type JobApplication = Prisma.JobApplicationModel

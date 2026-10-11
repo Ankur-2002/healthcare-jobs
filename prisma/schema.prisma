@@ -25,9 +25,28 @@ model Job {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  applications JobApplication[]
+
   // Indexes critical for SEO page queries
   @@index([slug])
   @@index([profession])
   @@index([location])
   @@index([profession, location]) // Composite for filtered queries
+}
+
+model JobApplication {
+  id              String   @id @default(cuid())
+  applicantKey    String
+  jobId           String
+  resumeObjectKey String
+  resumeUrl       String
+  fileName        String
+  contentType     String
+  sizeBytes       Int
+  createdAt       DateTime @default(now())
+
+  job Job @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
+
+  @@unique([applicantKey, jobId])
+  @@index([jobId])
 }

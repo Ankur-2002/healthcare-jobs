@@ -31,6 +31,18 @@ export interface RelatedPage {
   jobCount: number;
 }
 
+export type ApplicationUiStatus = 'unknown' | 'not_applied' | 'applied';
+
+export interface ApplicationStatusResponse {
+  applied: boolean;
+  appliedAt?: string;
+}
+
+export interface ApplicationSubmitResponse {
+  ok: boolean;
+  appliedAt: string;
+}
+
 export interface JobsPageData {
   jobs: Job[];
   pagination: PaginationMeta;

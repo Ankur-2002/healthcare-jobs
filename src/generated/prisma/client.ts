@@ -46,3 +46,8 @@ export { Prisma }
  * 
  */
 export type Job = Prisma.JobModel
+/**
+ * Model JobApplication
+ * 
+ */
+export type JobApplication = Prisma.JobApplicationModel

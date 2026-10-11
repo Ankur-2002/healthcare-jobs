@@ -1,7 +1,13 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { Job } from '@/types';
+import {
+  fetchApplicationStatus,
+  getOrCreateApplicantKey,
+  isJobAppliedInCache,
+  markJobAppliedInCache,
+} from '@/lib/applicant';
+import type { ApplicationUiStatus, Job } from '@/types';
 
 interface JobCardProps {
   job: Job;
@@ -25,10 +31,44 @@ function truncateDescription(text: string, maxLength: number = 155): string {
   return text.slice(0, maxLength).replace(/\s+\S*$/, '') + '…';
 }
 
+function formatAppliedDate(iso: string): string {
+  return new Date(iso).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+interface JobDetailModalProps {
+  job: Job;
+  applicationStatus: ApplicationUiStatus;
+  appliedAt?: string;
+  onClose: () => void;
+  onApplySuccess: (appliedAt: string) => void;
+}
+
 /* ── Job Detail Modal ─────────────────────────────────────────────────────── */
-function JobDetailModal({ job, onClose }: { job: Job; onClose: () => void }) {
+function JobDetailModal({
+  job,
+  applicationStatus,
+  appliedAt,
+  onClose,
+  onApplySuccess,
+}: JobDetailModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const relativeDate = formatRelativeDate(job.postedDate);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const isLoadingStatus = applicationStatus === 'unknown';
+  const hasApplied = applicationStatus === 'applied';
+
+  useEffect(() => {
+    setSelectedFile(null);
+    setSubmitError(null);
+  }, [job.jobId, applicationStatus]);
 
   /* Close on Escape */
   useEffect(() => {
@@ -46,6 +86,59 @@ function JobDetailModal({ job, onClose }: { job: Job; onClose: () => void }) {
   /* Close on backdrop click */
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === overlayRef.current) onClose();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    setSelectedFile(file);
+    setSubmitError(null);
+  };
+
+  const handleApply = async () => {
+    if (!selectedFile || hasApplied || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('jobId', job.jobId);
+      formData.append('applicantKey', getOrCreateApplicantKey());
+      formData.append('file', selectedFile);
+
+      const res = await fetch('/api/applications', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        appliedAt?: string;
+      };
+
+      if (res.status === 409 || data.error === 'already_applied') {
+        onApplySuccess(appliedAt ?? new Date().toISOString());
+        return;
+      }
+
+      if (!res.ok) {
+        setSubmitError(
+          data.error === 'Failed to upload resume'
+            ? 'Upload failed. Please try again.'
+            : data.error ?? 'Could not submit application. Please try again.'
+        );
+        return;
+      }
+
+      if (data.appliedAt) {
+        markJobAppliedInCache(job.jobId);
+        onApplySuccess(data.appliedAt);
+      }
+    } catch {
+      setSubmitError('Could not submit application. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -180,35 +273,81 @@ function JobDetailModal({ job, onClose }: { job: Job; onClose: () => void }) {
           {/* Divider */}
           <hr className="border-slate-100" />
 
-          {/* CTA row */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-            <p className="text-xs text-slate-400 font-body">
-              You will be redirected to the employer&apos;s site to complete
-              your application.
-            </p>
-            <a
-              href={job.applyLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              id={`apply-job-btn-${job.id}`}
-              aria-label={`Apply for ${job.title} at ${job.company}`}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white text-sm font-semibold font-body shadow-md shadow-emerald-200 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 whitespace-nowrap"
-            >
-              Apply Now
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-4 h-4"
-                aria-hidden="true"
+          {/* Apply / applied */}
+          <div className="flex flex-col gap-3">
+            {isLoadingStatus ? (
+              <div
+                className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 flex flex-col items-center justify-center gap-3"
+                role="status"
+                aria-live="polite"
+                aria-busy="true"
               >
-                <path
-                  fillRule="evenodd"
-                  d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z"
-                  clipRule="evenodd"
+                <div
+                  className="h-8 w-8 rounded-full border-2 border-slate-200 border-t-emerald-500 animate-spin"
+                  aria-hidden="true"
                 />
-              </svg>
-            </a>
+                <p className="text-sm text-slate-600 font-body">
+                  Checking your application status…
+                </p>
+              </div>
+            ) : hasApplied ? (
+              <div
+                className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3"
+                role="status"
+              >
+                <p className="text-sm font-semibold text-emerald-800 font-body">
+                  You already applied for this job
+                </p>
+                {appliedAt && (
+                  <p className="mt-1 text-xs text-emerald-700 font-body">
+                    Submitted on {formatAppliedDate(appliedAt)}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <>
+                <p className="text-xs text-slate-500 font-body">
+                  Upload your resume (PDF or Word, max 5 MB) to apply for this
+                  role.
+                </p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  className="sr-only"
+                  id={`resume-input-${job.id}`}
+                  onChange={handleFileChange}
+                />
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 font-body hover:bg-slate-50 transition-colors"
+                  >
+                    {selectedFile ? selectedFile.name : 'Choose resume'}
+                  </button>
+                  <button
+                    type="button"
+                    id={`apply-job-btn-${job.id}`}
+                    onClick={handleApply}
+                    disabled={!selectedFile || isSubmitting}
+                    aria-label={`Apply for ${job.title} at ${job.company}`}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none text-white text-sm font-semibold font-body shadow-md shadow-emerald-200 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 whitespace-nowrap"
+                  >
+                    {isSubmitting
+                      ? 'Submitting…'
+                      : selectedFile
+                        ? 'Submit'
+                        : 'Apply with resume'}
+                  </button>
+                </div>
+                {submitError && (
+                  <p className="text-xs text-red-600 font-body" role="alert">
+                    {submitError}
+                  </p>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -221,6 +360,56 @@ export default function JobCard({ job }: JobCardProps) {
   const relativeDate = formatRelativeDate(job.postedDate);
   const shortDescription = truncateDescription(job.description);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [applicationStatus, setApplicationStatus] =
+    useState<ApplicationUiStatus>('unknown');
+  const [appliedAt, setAppliedAt] = useState<string | undefined>();
+  const [showAppliedBadge, setShowAppliedBadge] = useState(false);
+
+  useEffect(() => {
+    setShowAppliedBadge(isJobAppliedInCache(job.jobId));
+  }, [job.jobId]);
+
+  useEffect(() => {
+    if (!isModalOpen) return;
+
+    let cancelled = false;
+    setApplicationStatus('unknown');
+    setAppliedAt(undefined);
+
+    (async () => {
+      try {
+        const applicantKey = getOrCreateApplicantKey();
+        const status = await fetchApplicationStatus(job.jobId, applicantKey);
+        if (cancelled) return;
+
+        if (status.applied) {
+          setApplicationStatus('applied');
+          setAppliedAt(status.appliedAt);
+          markJobAppliedInCache(job.jobId);
+          setShowAppliedBadge(true);
+        } else {
+          setApplicationStatus('not_applied');
+        }
+      } catch {
+        if (!cancelled) setApplicationStatus('not_applied');
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isModalOpen, job.jobId]);
+
+  function handleViewJob() {
+    setIsModalOpen(true);
+  }
+
+  function handleApplySuccess(iso: string) {
+    setApplicationStatus('applied');
+    setAppliedAt(iso);
+    markJobAppliedInCache(job.jobId);
+    setShowAppliedBadge(true);
+  }
 
   return (
     <>
@@ -234,10 +423,15 @@ export default function JobCard({ job }: JobCardProps) {
           {/* ── Left column ─────────────────────────────────────────────── */}
           <div className="flex-1 min-w-0 flex flex-col gap-1.5">
             {/* Category pill */}
-            <div>
+            <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
                 {job.category}
               </span>
+              {showAppliedBadge && (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                  Applied
+                </span>
+              )}
             </div>
 
             {/* Job title */}
@@ -286,7 +480,7 @@ export default function JobCard({ job }: JobCardProps) {
 
             {/* View Job button — now opens modal */}
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={handleViewJob}
               id={`view-job-btn-${job.id}`}
               aria-label={`View job details: ${job.title} at ${job.company}`}
               className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg border border-emerald-500 text-emerald-600 text-sm font-semibold font-body hover:bg-emerald-50 hover:border-emerald-600 active:bg-emerald-100 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 whitespace-nowrap"
@@ -312,7 +506,13 @@ export default function JobCard({ job }: JobCardProps) {
 
       {/* Job Detail Modal */}
       {isModalOpen && (
-        <JobDetailModal job={job} onClose={() => setIsModalOpen(false)} />
+        <JobDetailModal
+          job={job}
+          applicationStatus={applicationStatus}
+          appliedAt={appliedAt}
+          onClose={() => setIsModalOpen(false)}
+          onApplySuccess={handleApplySuccess}
+        />
       )}
     </>
   );

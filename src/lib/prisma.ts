@@ -13,11 +13,19 @@ const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL || 'postgresql://dummy:dummy@localhost:5432/dummy',
 });
 
+function createPrismaClient(): PrismaClient {
+  return new PrismaClient({ adapter });
+}
+
+/** Dev HMR can keep a PrismaClient from before schema/client regenerate. */
+function prismaClientIsCurrent(client: PrismaClient): boolean {
+  return typeof (client as PrismaClient & { jobApplication?: unknown }).jobApplication !== "undefined";
+}
+
 const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    adapter,
-  });
+  globalForPrisma.prisma && prismaClientIsCurrent(globalForPrisma.prisma)
+    ? globalForPrisma.prisma
+    : createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
