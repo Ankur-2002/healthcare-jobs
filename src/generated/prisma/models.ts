@@ -10,4 +10,5 @@
  */
 export type * from './models/Job'
 export type * from './models/JobApplication'
+export type * from './models/PastJob'
 export type * from './commonInputTypes'

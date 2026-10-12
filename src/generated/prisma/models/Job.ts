@@ -46,6 +46,7 @@ export type JobMinAggregateOutputType = {
   company: string | null
   category: string | null
   postedDate: Date | null
+  isApplicationControl: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,6 +63,7 @@ export type JobMaxAggregateOutputType = {
   company: string | null
   category: string | null
   postedDate: Date | null
+  isApplicationControl: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -78,6 +80,7 @@ export type JobCountAggregateOutputType = {
   company: number
   category: number
   postedDate: number
+  isApplicationControl: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -104,6 +107,7 @@ export type JobMinAggregateInputType = {
   company?: true
   category?: true
   postedDate?: true
+  isApplicationControl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -120,6 +124,7 @@ export type JobMaxAggregateInputType = {
   company?: true
   category?: true
   postedDate?: true
+  isApplicationControl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -136,6 +141,7 @@ export type JobCountAggregateInputType = {
   company?: true
   category?: true
   postedDate?: true
+  isApplicationControl?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -239,6 +245,7 @@ export type JobGroupByOutputType = {
   company: string
   category: string
   postedDate: Date
+  isApplicationControl: boolean
   createdAt: Date
   updatedAt: Date
   _count: JobCountAggregateOutputType | null
@@ -278,6 +285,7 @@ export type JobWhereInput = {
   company?: Prisma.StringFilter<"Job"> | string
   category?: Prisma.StringFilter<"Job"> | string
   postedDate?: Prisma.DateTimeFilter<"Job"> | Date | string
+  isApplicationControl?: Prisma.BoolFilter<"Job"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   applications?: Prisma.JobApplicationListRelationFilter
@@ -295,6 +303,7 @@ export type JobOrderByWithRelationInput = {
   company?: Prisma.SortOrder
   category?: Prisma.SortOrder
   postedDate?: Prisma.SortOrder
+  isApplicationControl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   applications?: Prisma.JobApplicationOrderByRelationAggregateInput
@@ -315,6 +324,7 @@ export type JobWhereUniqueInput = Prisma.AtLeast<{
   company?: Prisma.StringFilter<"Job"> | string
   category?: Prisma.StringFilter<"Job"> | string
   postedDate?: Prisma.DateTimeFilter<"Job"> | Date | string
+  isApplicationControl?: Prisma.BoolFilter<"Job"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   applications?: Prisma.JobApplicationListRelationFilter
@@ -332,6 +342,7 @@ export type JobOrderByWithAggregationInput = {
   company?: Prisma.SortOrder
   category?: Prisma.SortOrder
   postedDate?: Prisma.SortOrder
+  isApplicationControl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.JobCountOrderByAggregateInput
@@ -356,6 +367,7 @@ export type JobScalarWhereWithAggregatesInput = {
   company?: Prisma.StringWithAggregatesFilter<"Job"> | string
   category?: Prisma.StringWithAggregatesFilter<"Job"> | string
   postedDate?: Prisma.DateTimeWithAggregatesFilter<"Job"> | Date | string
+  isApplicationControl?: Prisma.BoolWithAggregatesFilter<"Job"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Job"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Job"> | Date | string
 }
@@ -371,6 +383,7 @@ export type JobCreateInput = {
   company: string
   category: string
   postedDate: Date | string
+  isApplicationControl?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   applications?: Prisma.JobApplicationCreateNestedManyWithoutJobInput
@@ -388,6 +401,7 @@ export type JobUncheckedCreateInput = {
   company: string
   category: string
   postedDate: Date | string
+  isApplicationControl?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   applications?: Prisma.JobApplicationUncheckedCreateNestedManyWithoutJobInput
@@ -404,6 +418,7 @@ export type JobUpdateInput = {
   company?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   postedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isApplicationControl?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   applications?: Prisma.JobApplicationUpdateManyWithoutJobNestedInput
@@ -421,6 +436,7 @@ export type JobUncheckedUpdateInput = {
   company?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   postedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isApplicationControl?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   applications?: Prisma.JobApplicationUncheckedUpdateManyWithoutJobNestedInput
@@ -438,6 +454,7 @@ export type JobCreateManyInput = {
   company: string
   category: string
   postedDate: Date | string
+  isApplicationControl?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -453,6 +470,7 @@ export type JobUpdateManyMutationInput = {
   company?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   postedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isApplicationControl?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -469,6 +487,7 @@ export type JobUncheckedUpdateManyInput = {
   company?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   postedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isApplicationControl?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -485,6 +504,7 @@ export type JobCountOrderByAggregateInput = {
   company?: Prisma.SortOrder
   category?: Prisma.SortOrder
   postedDate?: Prisma.SortOrder
+  isApplicationControl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -505,6 +525,7 @@ export type JobMaxOrderByAggregateInput = {
   company?: Prisma.SortOrder
   category?: Prisma.SortOrder
   postedDate?: Prisma.SortOrder
+  isApplicationControl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -521,6 +542,7 @@ export type JobMinOrderByAggregateInput = {
   company?: Prisma.SortOrder
   category?: Prisma.SortOrder
   postedDate?: Prisma.SortOrder
+  isApplicationControl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -540,6 +562,10 @@ export type StringFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
 export type IntFieldUpdateOperationsInput = {
@@ -575,6 +601,7 @@ export type JobCreateWithoutApplicationsInput = {
   company: string
   category: string
   postedDate: Date | string
+  isApplicationControl?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -591,6 +618,7 @@ export type JobUncheckedCreateWithoutApplicationsInput = {
   company: string
   category: string
   postedDate: Date | string
+  isApplicationControl?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -622,6 +650,7 @@ export type JobUpdateWithoutApplicationsInput = {
   company?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   postedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isApplicationControl?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -638,6 +667,7 @@ export type JobUncheckedUpdateWithoutApplicationsInput = {
   company?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   postedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isApplicationControl?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -685,6 +715,7 @@ export type JobSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   company?: boolean
   category?: boolean
   postedDate?: boolean
+  isApplicationControl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   applications?: boolean | Prisma.Job$applicationsArgs<ExtArgs>
@@ -703,6 +734,7 @@ export type JobSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extension
   company?: boolean
   category?: boolean
   postedDate?: boolean
+  isApplicationControl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["job"]>
@@ -719,6 +751,7 @@ export type JobSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extension
   company?: boolean
   category?: boolean
   postedDate?: boolean
+  isApplicationControl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["job"]>
@@ -735,11 +768,12 @@ export type JobSelectScalar = {
   company?: boolean
   category?: boolean
   postedDate?: boolean
+  isApplicationControl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type JobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "jobId" | "title" | "slug" | "profession" | "location" | "description" | "applyLink" | "company" | "category" | "postedDate" | "createdAt" | "updatedAt", ExtArgs["result"]["job"]>
+export type JobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "jobId" | "title" | "slug" | "profession" | "location" | "description" | "applyLink" | "company" | "category" | "postedDate" | "isApplicationControl" | "createdAt" | "updatedAt", ExtArgs["result"]["job"]>
 export type JobInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   applications?: boolean | Prisma.Job$applicationsArgs<ExtArgs>
   _count?: boolean | Prisma.JobCountOutputTypeDefaultArgs<ExtArgs>
@@ -764,6 +798,10 @@ export type $JobPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     company: string
     category: string
     postedDate: Date
+    /**
+     * When true, this job is eligible for the refresh cron (archive + recreate).
+     */
+    isApplicationControl: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["job"]>
@@ -1201,6 +1239,7 @@ export interface JobFieldRefs {
   readonly company: Prisma.FieldRef<"Job", 'String'>
   readonly category: Prisma.FieldRef<"Job", 'String'>
   readonly postedDate: Prisma.FieldRef<"Job", 'DateTime'>
+  readonly isApplicationControl: Prisma.FieldRef<"Job", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Job", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Job", 'DateTime'>
 }

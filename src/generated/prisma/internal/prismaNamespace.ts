@@ -398,7 +398,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   Job: 'Job',
-  JobApplication: 'JobApplication'
+  JobApplication: 'JobApplication',
+  PastJob: 'PastJob'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -414,7 +415,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "job" | "jobApplication"
+    modelProps: "job" | "jobApplication" | "pastJob"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -566,6 +567,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PastJob: {
+      payload: Prisma.$PastJobPayload<ExtArgs>
+      fields: Prisma.PastJobFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PastJobFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PastJobPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PastJobFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PastJobPayload>
+        }
+        findFirst: {
+          args: Prisma.PastJobFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PastJobPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PastJobFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PastJobPayload>
+        }
+        findMany: {
+          args: Prisma.PastJobFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PastJobPayload>[]
+        }
+        create: {
+          args: Prisma.PastJobCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PastJobPayload>
+        }
+        createMany: {
+          args: Prisma.PastJobCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PastJobCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PastJobPayload>[]
+        }
+        delete: {
+          args: Prisma.PastJobDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PastJobPayload>
+        }
+        update: {
+          args: Prisma.PastJobUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PastJobPayload>
+        }
+        deleteMany: {
+          args: Prisma.PastJobDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PastJobUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PastJobUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PastJobPayload>[]
+        }
+        upsert: {
+          args: Prisma.PastJobUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PastJobPayload>
+        }
+        aggregate: {
+          args: Prisma.PastJobAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePastJob>
+        }
+        groupBy: {
+          args: Prisma.PastJobGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PastJobGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PastJobCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PastJobCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -617,6 +692,7 @@ export const JobScalarFieldEnum = {
   company: 'company',
   category: 'category',
   postedDate: 'postedDate',
+  isApplicationControl: 'isApplicationControl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -639,6 +715,28 @@ export const JobApplicationScalarFieldEnum = {
 export type JobApplicationScalarFieldEnum = (typeof JobApplicationScalarFieldEnum)[keyof typeof JobApplicationScalarFieldEnum]
 
 
+export const PastJobScalarFieldEnum = {
+  id: 'id',
+  originalJobId: 'originalJobId',
+  replacementJobId: 'replacementJobId',
+  title: 'title',
+  slug: 'slug',
+  profession: 'profession',
+  location: 'location',
+  description: 'description',
+  applyLink: 'applyLink',
+  company: 'company',
+  category: 'category',
+  postedDate: 'postedDate',
+  originalCreatedAt: 'originalCreatedAt',
+  originalUpdatedAt: 'originalUpdatedAt',
+  archivedAt: 'archivedAt',
+  refreshRunId: 'refreshRunId'
+} as const
+
+export type PastJobScalarFieldEnum = (typeof PastJobScalarFieldEnum)[keyof typeof PastJobScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -653,6 +751,14 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 
@@ -700,6 +806,13 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -869,6 +982,7 @@ export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaC
 export type GlobalOmitConfig = {
   job?: Prisma.JobOmit
   jobApplication?: Prisma.JobApplicationOmit
+  pastJob?: Prisma.PastJobOmit
 }
 
 /* Types for Logging */

@@ -27,3 +27,8 @@ export type Job = Prisma.JobModel
  * 
  */
 export type JobApplication = Prisma.JobApplicationModel
+/**
+ * Model PastJob
+ * Archived snapshot when a job is recycled by the refresh cron.
+ */
+export type PastJob = Prisma.PastJobModel

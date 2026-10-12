@@ -19,7 +19,14 @@ function createPrismaClient(): PrismaClient {
 
 /** Dev HMR can keep a PrismaClient from before schema/client regenerate. */
 function prismaClientIsCurrent(client: PrismaClient): boolean {
-  return typeof (client as PrismaClient & { jobApplication?: unknown }).jobApplication !== "undefined";
+  const c = client as PrismaClient & {
+    jobApplication?: unknown;
+    pastJob?: unknown;
+  };
+  return (
+    typeof c.jobApplication !== "undefined" &&
+    typeof c.pastJob !== "undefined"
+  );
 }
 
 const prisma =

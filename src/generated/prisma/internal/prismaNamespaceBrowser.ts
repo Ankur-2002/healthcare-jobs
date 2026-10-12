@@ -52,7 +52,8 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   Job: 'Job',
-  JobApplication: 'JobApplication'
+  JobApplication: 'JobApplication',
+  PastJob: 'PastJob'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -83,6 +84,7 @@ export const JobScalarFieldEnum = {
   company: 'company',
   category: 'category',
   postedDate: 'postedDate',
+  isApplicationControl: 'isApplicationControl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -105,6 +107,28 @@ export const JobApplicationScalarFieldEnum = {
 export type JobApplicationScalarFieldEnum = (typeof JobApplicationScalarFieldEnum)[keyof typeof JobApplicationScalarFieldEnum]
 
 
+export const PastJobScalarFieldEnum = {
+  id: 'id',
+  originalJobId: 'originalJobId',
+  replacementJobId: 'replacementJobId',
+  title: 'title',
+  slug: 'slug',
+  profession: 'profession',
+  location: 'location',
+  description: 'description',
+  applyLink: 'applyLink',
+  company: 'company',
+  category: 'category',
+  postedDate: 'postedDate',
+  originalCreatedAt: 'originalCreatedAt',
+  originalUpdatedAt: 'originalUpdatedAt',
+  archivedAt: 'archivedAt',
+  refreshRunId: 'refreshRunId'
+} as const
+
+export type PastJobScalarFieldEnum = (typeof PastJobScalarFieldEnum)[keyof typeof PastJobScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -119,4 +143,12 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

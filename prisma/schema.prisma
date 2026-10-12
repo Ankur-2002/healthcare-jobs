@@ -22,10 +22,14 @@ model Job {
   company     String
   category    String // e.g. "Full Time", "Part Time"
   postedDate  DateTime
+  /// When true, this job is eligible for the refresh cron (archive + recreate).
+  isApplicationControl Boolean @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   applications JobApplication[]
+
+  @@index([isApplicationControl])
 
   // Indexes critical for SEO page queries
   @@index([slug])
@@ -49,4 +53,29 @@ model JobApplication {
 
   @@unique([applicantKey, jobId])
   @@index([jobId])
+}
+
+/// Archived snapshot when a job is recycled by the refresh cron.
+model PastJob {
+  id                String   @id @default(cuid())
+  originalJobId     String
+  replacementJobId  String?
+  title             String
+  slug              String   @db.VarChar(255)
+  profession        String
+  location          String
+  description       String   @db.Text
+  applyLink         String
+  company           String
+  category          String
+  postedDate        DateTime
+  originalCreatedAt DateTime
+  originalUpdatedAt DateTime
+  archivedAt        DateTime @default(now())
+  refreshRunId      String
+
+  @@index([originalJobId])
+  @@index([archivedAt])
+  @@index([refreshRunId])
+  @@map("past_jobs")
 }

@@ -4,6 +4,7 @@
 
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { generateJobId } from '@/lib/jobId'
 
 // ── Slug generation (matches Python scraper logic exactly) ─────────────────
 function generateSlug(profession: string, location: string): string {
@@ -11,14 +12,6 @@ function generateSlug(profession: string, location: string): string {
   const locationSlug   = location.toLowerCase().trim().replace(/\s+/g, '-')
   const slug = `${professionSlug}-jobs-in-${locationSlug}`
   return slug.slice(0, 255)
-}
-
-// ── Unique job ID generator ────────────────────────────────────────────────
-function generateJobId(profession: string, location: string): string {
-  const timestamp = Date.now()
-  const profPart  = profession.slice(0, 3).toUpperCase().replace(/\s+/g, '')
-  const locPart   = location.slice(0, 3).toUpperCase().replace(/\s+/g, '')
-  return `HJP-${profPart}-${locPart}-${timestamp}`
 }
 
 export async function POST(request: Request) {

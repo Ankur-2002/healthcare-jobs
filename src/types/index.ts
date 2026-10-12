@@ -13,6 +13,7 @@ export interface Job {
   company: string;
   category: string;
   postedDate: Date;
+  isApplicationControl: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
