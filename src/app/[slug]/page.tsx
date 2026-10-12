@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
 
 import {
   parseSlug,
+  normalizeRouteSlug,
   professionDisplayName,
   locationDisplayName,
 } from '@/lib/slug';
@@ -52,8 +53,12 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const parsed = parseSlug(slug);
-  if (!parsed) return {};
+  const canonicalSlug = normalizeRouteSlug(slug);
+  if (canonicalSlug !== slug.trim().toLowerCase()) {
+    redirect(`/${canonicalSlug}`);
+  }
+  const parsed = parseSlug(canonicalSlug);
+  if (!parsed) notFound();
   return generatePageMetadata(parsed.profession, parsed.location);
 }
 
@@ -70,11 +75,14 @@ export default async function SlugPage({
   searchParams: Promise<{ page?: string; sort?: string }>;
 }) {
   const { slug } = await params;
+  const canonicalSlug = normalizeRouteSlug(slug);
+  if (canonicalSlug !== slug.trim().toLowerCase()) {
+    redirect(`/${canonicalSlug}`);
+  }
   const { page: pageParam, sort: sortParam } = await searchParams;
   const sort = sortParam === 'oldest' ? 'oldest' : 'newest';
 
-  // Parse slug → profession + location
-  const parsed = parseSlug(slug);
+  const parsed = parseSlug(canonicalSlug);
   if (!parsed) notFound();
 
   const { profession, location } = parsed;
@@ -96,7 +104,11 @@ export default async function SlugPage({
   const locationDisplay = locationDisplayName(location);
 
   // JSON-LD structured data
-  const breadcrumbJsonLd = generateBreadcrumbJsonLd(profession, location, slug);
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd(
+    profession,
+    location,
+    canonicalSlug,
+  );
   const jobPostingsJsonLd = generateJobPostingsJsonLd(jobs);
 
   return (

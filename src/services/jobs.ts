@@ -24,18 +24,26 @@ export const isWildcardProfession = (p: string) =>
 export const isWildcardLocation = (l: string) =>
   l.toLowerCase() === WILDCARD_LOCATION;
 
+/** URL slug segments use hyphens; DB values use spaces (e.g. lab-technician → Lab Technician). */
+function slugSegmentToFilterValue(segment: string): string {
+  return segment.replace(/-/g, ' ').trim();
+}
+
 /**
  * Builds the Prisma `where` clause that respects wildcards.
  * Omits the field entirely when the wildcard is detected,
  * which tells Prisma to match every row for that field.
  */
 function buildWhereClause(profession: string, location: string) {
+  const professionFilter = slugSegmentToFilterValue(profession);
+  const locationFilter = slugSegmentToFilterValue(location);
+
   return {
     ...(!isWildcardProfession(profession) && {
-      profession: { equals: profession, mode: 'insensitive' as const },
+      profession: { equals: professionFilter, mode: 'insensitive' as const },
     }),
     ...(!isWildcardLocation(location) && {
-      location: { equals: location, mode: 'insensitive' as const },
+      location: { equals: locationFilter, mode: 'insensitive' as const },
     }),
   };
 }
@@ -162,11 +170,13 @@ export async function getStaticPages(): Promise<
       location: string;
       _count: { id: number };
     };
-    return (raw as GroupByRow[]).map(r => ({
-      slug: generateSlug(r.profession, r.location),
-      profession: r.profession,
-      location: r.location,
-    }));
+    return (raw as GroupByRow[])
+      .filter(r => r.profession?.trim() && r.location?.trim())
+      .map(r => ({
+        slug: generateSlug(r.profession, r.location),
+        profession: r.profession,
+        location: r.location,
+      }));
   } catch (error) {
     console.warn(
       '[getStaticPages] Failed to connect to database (expected if DATABASE_URL is missing)',
@@ -317,7 +327,12 @@ export async function getProfessionCities(
   try {
     const where = isWildcardProfession(profession)
       ? {}
-      : { profession: { equals: profession, mode: 'insensitive' as const } };
+      : {
+          profession: {
+            equals: slugSegmentToFilterValue(profession),
+            mode: 'insensitive' as const,
+          },
+        };
 
     const raw = await prisma.job.groupBy({
       by: ['location'],
@@ -359,7 +374,12 @@ export async function getProfessionsInCity(
   try {
     const where = isWildcardLocation(location)
       ? {}
-      : { location: { equals: location, mode: 'insensitive' as const } };
+      : {
+          location: {
+            equals: slugSegmentToFilterValue(location),
+            mode: 'insensitive' as const,
+          },
+        };
 
     const raw = await prisma.job.groupBy({
       by: ['profession'],
@@ -374,7 +394,8 @@ export async function getProfessionsInCity(
       .filter(
         r =>
           !isWildcardProfession(r.profession) &&
-          r.profession.toLowerCase() !== excludeProfession.toLowerCase(),
+          r.profession.toLowerCase() !==
+            slugSegmentToFilterValue(excludeProfession).toLowerCase(),
       )
       .map(r => ({
         profession: r.profession,

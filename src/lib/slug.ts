@@ -23,12 +23,21 @@ export function parseSlug(
   if (!match) return null;
 
   const [, professionRaw, locationRaw] = match;
-  if (!professionRaw || !locationRaw) return null;
+  if (!professionRaw?.trim() || !locationRaw?.trim()) return null;
 
   return {
     profession: professionRaw.toLowerCase(),
     location: locationRaw.toLowerCase(),
   };
+}
+
+/** Fixes legacy/bad slugs like "-jobs-in-delhi" (missing profession → all healthcare). */
+export function normalizeRouteSlug(slug: string): string {
+  const trimmed = slug.trim().toLowerCase();
+  if (trimmed.startsWith('-jobs-in-')) {
+    return `${WILDCARD_PROFESSION}${trimmed}`;
+  }
+  return trimmed;
 }
 
 /**
@@ -42,8 +51,10 @@ export function parseSlug(
  *   ("healthcare", "india")    → "healthcare-jobs-in-india"  (all jobs)
  */
 export function generateSlug(profession: string, location: string): string {
-  const professionSlug = profession.toLowerCase().trim().replace(/\s+/g, '-');
-  const locationSlug = location.toLowerCase().trim().replace(/\s+/g, '-');
+  let professionSlug = profession.toLowerCase().trim().replace(/\s+/g, '-');
+  let locationSlug = location.toLowerCase().trim().replace(/\s+/g, '-');
+  if (!professionSlug) professionSlug = WILDCARD_PROFESSION;
+  if (!locationSlug) locationSlug = WILDCARD_LOCATION;
   return `${professionSlug}-jobs-in-${locationSlug}`;
 }
 
