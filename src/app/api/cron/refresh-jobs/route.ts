@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { refreshStaleJobs, shouldRunCronTick } from '@/lib/jobRefresh';
+import { refreshStaleJobs } from '@/lib/jobRefresh';
 
 function isAuthorized(request: Request): boolean {
   const secret = process.env.CRON_SECRET;
@@ -13,25 +13,17 @@ function isAuthorized(request: Request): boolean {
   return querySecret === secret;
 }
 
+/**
+ * Job refresh endpoint — invoke from your own server (curl/cron), not Vercel Cron.
+ */
 export async function GET(request: Request) {
   if (!isAuthorized(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const url = new URL(request.url);
-  const force = url.searchParams.get('force') === 'true';
-
-  if (!force && !shouldRunCronTick()) {
-    return NextResponse.json({
-      ok: true,
-      skipped: true,
-      reason: 'random_skip',
-    });
-  }
-
   try {
     const result = await refreshStaleJobs();
-    return NextResponse.json({ ok: true, skipped: false, ...result });
+    return NextResponse.json({ ok: true, ...result });
   } catch (err) {
     console.error('Job refresh cron failed:', err);
     return NextResponse.json(

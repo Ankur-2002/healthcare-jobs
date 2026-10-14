@@ -6,11 +6,6 @@ const MIN_AGE_DAYS = 20;
 const DEFAULT_MAX_AGE_DAYS = 40;
 const CANDIDATE_POOL_SIZE = 40;
 
-/** ~12% per 15-min tick → about 7–15 runs/day with no plan table. */
-export function shouldRunCronTick(): boolean {
-  return randomInt(1, 101) <= 12;
-}
-
 export type JobRefreshResult = {
   refreshRunId: string;
   minAgeDays: number;
