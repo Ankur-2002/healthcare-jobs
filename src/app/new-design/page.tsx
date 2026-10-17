@@ -127,23 +127,6 @@ const STATS = [
   },
 ];
 
-// ─── SVG helpers ──────────────────────────────────────────────────────────────
-const CheckIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-    className="w-3.5 h-3.5"
-    aria-hidden="true"
-  >
-    <path
-      fillRule="evenodd"
-      d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
 const PinIcon = ({ cls = 'w-3.5 h-3.5 shrink-0' }: { cls?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -188,22 +171,6 @@ const ChevronRightIcon = () => (
     <path
       fillRule="evenodd"
       d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
-const ShieldIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    className="w-6 h-6"
-    aria-hidden="true"
-  >
-    <path
-      fillRule="evenodd"
-      d="M12.516 2.17a.75.75 0 00-1.032 0 11.209 11.209 0 01-7.877 3.08.75.75 0 00-.722.515A12.74 12.74 0 002.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 00.374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 00-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08zm3.094 8.016a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
       clipRule="evenodd"
     />
   </svg>
