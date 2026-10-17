@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { refreshStaleJobs } from '@/lib/jobRefresh';
+import { getJobRefreshScheduleDecision } from '@/lib/jobRefreshSchedule';
 
 function isAuthorized(request: Request): boolean {
   const secret = process.env.CRON_SECRET;
@@ -22,8 +23,18 @@ export async function GET(request: Request) {
   }
 
   try {
+    const schedule = getJobRefreshScheduleDecision();
+    if (!schedule.run) {
+      return NextResponse.json({
+        ok: true,
+        skipped: true,
+        reason: 'Outside randomized daily refresh window',
+        schedule,
+      });
+    }
+
     const result = await refreshStaleJobs();
-    return NextResponse.json({ ok: true, ...result });
+    return NextResponse.json({ ok: true, skipped: false, schedule, ...result });
   } catch (err) {
     console.error('Job refresh cron failed:', err);
     return NextResponse.json(
