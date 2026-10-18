@@ -1,12 +1,10 @@
 import { MetadataRoute } from 'next';
-import { getStaticPages } from '@/services/jobs';
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.healthhirehub.com';
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Homepage
-  const staticPages: MetadataRoute.Sitemap = [
+export default function sitemap(): MetadataRoute.Sitemap {
+  return [
     {
       url: SITE_URL,
       lastModified: new Date(),
@@ -14,21 +12,4 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
   ];
-
-  // Dynamic profession/location pages
-  let dynamicPages: MetadataRoute.Sitemap = [];
-  try {
-    const pages = await getStaticPages();
-    const filteredPages = pages.filter(page => page.slug);
-    dynamicPages = filteredPages.map(page => ({
-      url: `${SITE_URL}/${page.slug}`.replace(/&/g, '&amp;'),
-      lastModified: new Date(),
-      changeFrequency: 'hourly' as const,
-      priority: 0.8,
-    }));
-  } catch {
-    // DB not configured — return only static pages
-  }
-
-  return [...staticPages, ...dynamicPages];
 }
