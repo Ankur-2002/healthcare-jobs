@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getStaticPages } from '@/services/jobs';
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.healthhirehub.com/jobs';
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.healthhirehub.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Homepage
